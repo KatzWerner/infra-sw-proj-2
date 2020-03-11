@@ -1,3 +1,5 @@
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -49,11 +51,15 @@ void makeMatrix(FILE *fp, int size, int **matriz)
     }
 }
 
+struct rusage r_usage;
+
 int main(int argc, char *argv[])
 {
+    int memoryusage;
+    memoryusage = getrusage(RUSAGE_SELF, &r_usage);
+
     clock_t start, end; 
     double total_time;
-    start = clock();
 
     int i, j, k;
     FILE *fd1 = fopen(argv[1], "r");
@@ -76,6 +82,7 @@ int main(int argc, char *argv[])
     //MULTIPLICATION
     int matriz_result[sizeA][sizeB];
 
+    start = clock();
     //inializing elements as '0'.
     for(i = 0; i < sizeA; i++)
     {
@@ -96,9 +103,9 @@ int main(int argc, char *argv[])
             }
         }
     }
+    end = clock ();
 
     FILE *fd3 = fopen("matrizFinal.txt", "w");
-
     //WRITING TO FILE
     for ( i = 0; i < sizeA; i++)
     {
@@ -110,9 +117,9 @@ int main(int argc, char *argv[])
     }
     fclose(fd3);
 
-    end = clock ();
     total_time = (double)(end - start) / CLOCKS_PER_SEC;
     printf("Tempo: %fs\n", total_time);
+    printf("Memória utilizada: %ld KB\n", r_usage.ru_maxrss);
 
     return 0;
 }
