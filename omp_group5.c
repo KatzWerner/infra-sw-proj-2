@@ -8,7 +8,6 @@ int **loc_matrix(int n)
 {
     int **arr = malloc(n * sizeof(int *));
 
-    #pragma omp parallel for
     for(int i=0; i<n; i++)
     {
         arr[i] = malloc(n *sizeof(int));
@@ -29,8 +28,6 @@ int getsize(FILE *fp)
     }
 
     rewind(fp);
-
-    #pragma omp parallel
     while( (ch = fgetc(fp)) != EOF)
     {
         if(ch == '\n')
@@ -45,15 +42,11 @@ int getsize(FILE *fp)
 void makeMatrix(FILE *fp, int size, int **matriz)
 {
     rewind(fp);
-    #pragma omp parallel
+    for (int i = 0; i < size ; i++)
     {
-        #pragma omp critical
-        for (int i = 0; i < size ; i++)
+        for (int j = 0; j < size; j++)
         {
-            for (int j = 0; j < size; j++)
-            {
-                fscanf(fp, "%d", &matriz[i][j]);
-            }
+            fscanf(fp, "%d", &matriz[i][j]);
         }
     }
 }
